@@ -1,0 +1,13 @@
+9600baud 1stop no parity for all serial lines
+LED Controller Serial1
+
+0x10 Red Green Blue Servo
+Should get ack byte 0x4f
+
+Servo Controller Serial2
+
+0x20 Servo1 Servo2 Servo3 Servo4
+Should get ack byte 0x55
+
+1-2 0x5 to 0x27
+3-4 full? range 
