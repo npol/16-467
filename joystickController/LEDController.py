@@ -1,3 +1,5 @@
+WRITE_INTERVAL = 0.1
+
 import serial
 import pygame
 from time import sleep
@@ -8,8 +10,18 @@ joystick = pygame.joystick
 def turnOnLED():
     pass
 
-def changeColor(r, g, b)
-    callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
+def changeColor(r, g, b, ser):
+    ser.write(chr(0x80))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0x10))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(r))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(g))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(b))
+    sleep(WRITE_INTERVAL)
+    #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
 
 def main():
     pygame.init()
@@ -24,16 +36,23 @@ def main():
     print "[Joystick] %d buttons" % stick.get_numbuttons()
     print "[Joystick] %d hats" % stick.get_numhats()
     
+    ser = serial.Serial("COM13", 9600, timeout=0)
+    print "Serial connected"
+    print "[Serial] Connected to Robot via %s" % ser.name
+    
     while True:
          pygame.event.pump()
+         #ser.write(chr(0x4f))
+         #sleep(0.1)
          #Event listeners.
+         changeColor(0,0,0,ser)
          if (stick.get_button(2)):
-             # changeColor(0, 0, 0)
-             print "Button 1"
-         if (stick.get_button(3)):
-             print "Button 2"
-         if (stick.get_button(4)):
+             changeColor(0, 0, 0, ser)
              print "Button 3"
+         if (stick.get_button(3)):
+             print "Button 4"
+         if (stick.get_button(4)):
+             print "Button 5"
         
 main()
 
