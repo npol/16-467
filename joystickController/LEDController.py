@@ -1,4 +1,4 @@
-WRITE_INTERVAL = 0.5
+WRITE_INTERVAL = 0.005
 
 import serial
 import pygame
@@ -22,7 +22,7 @@ def changeColor(r, g, b, ser):
     sleep(WRITE_INTERVAL)
     ser.write(chr(b))
     sleep(WRITE_INTERVAL)
-    ser.write(chr(0))
+    ser.write(chr(r))
     sleep(WRITE_INTERVAL)
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
 
@@ -40,7 +40,7 @@ def main():
     print "[Joystick] %d buttons" % stick.get_numbuttons()
     print "[Joystick] %d hats" % stick.get_numhats()
     
-    ser = serial.Serial("COM18", 9600, timeout=0)
+    ser = serial.Serial("COM16", 9600, timeout=0)
     print "Serial connected"
     print "[Serial] Connected to Robot via %s" % ser.name
     changeColor(int(0),int(0),int(0),ser);
@@ -54,7 +54,7 @@ def main():
              green = 255
          print (green)
          print (red)
-         changeColor(int(red), int(green),0,ser)
+         changeColor(int(red), int(green),int(green),ser)
          #ser.write(chr(0x4f))
          #sleep(0.1)
          #Event listeners.
