@@ -1,4 +1,4 @@
-
+#include <Wire.h>
 /* Pinouts */
 #define panDir 12
 #define panPWM 3
@@ -8,16 +8,38 @@
 
 void setup(){
   Serial.begin(9600);//Interface to computer
-  Serial1.begin(9600);//Interface to LED Controller
-  Serial2.begin(9600);//Interface to Servo Controller
-  pinMode(panDir, OUTPUT);
-  pinMode(panPWM, OUTPUT);
-  pinMode(panBrake, OUTPUT);
+  Wire.begin();
+  pinMode(13,OUTPUT);
 }
 
 void loop(){
+  while(1){
+    int data = Serial.read();
+    Wire.beginTransmission(data);
+    Wire.write(data);
+    Wire.endTransmission();
+    delay(500);
+  }
+  
+  
+  
+  
   /* Wait for packet */
-  if(Serial.available() >= 6){//What if header is not first byte in buffer?
+  /*
+  while(1){
+    //int temp = Serial.available();
+    //int data = 0;
+    //while(data != -1) data = Serial.read();
+    //digitalWrite(13,HIGH);
+    int temp = Serial.read();
+    delay(2000);
+    Serial1.write(temp);
+    delay(2000);
+    //digitalWrite(13,LOW);
+    //delay(1000);
+  }
+  if(Serial.available() >= 5){//What if header is not first byte in buffer?
+    Serial1.write(0x55);
     Serial.println("bytes found");
     if(Serial.read() != 0x80) return;
     digitalWrite(DLED,HIGH);
@@ -37,8 +59,9 @@ void loop(){
     Serial.print(",");
     Serial.print(cmd3);
     Serial.print('\n');
-    
+    */
     /* Strip header, send 5-byte packet to device */
+    /*
     if(device == 0x10){      //LED Controller
       Serial1.write(device);//address
       delay(10);
@@ -81,6 +104,7 @@ void loop(){
     Serial.print(Serial2.read(),HEX);
     Serial.print('\n');
   }
+  */
 }
       
       
