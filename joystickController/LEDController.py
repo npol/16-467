@@ -34,29 +34,28 @@ def writeToSer(a, b, c, d, e, f, ser):
     ser.write(f); sleep(WRITE_INTERVAL)
 
 def changeEyeColor(newR, newG, newB, ser):
-    global r 
-    r = newR 
-    global g = newG
-    global b = newB
+    global r; r = newR 
+    global g; g= newG
+    global b; b = newB
     global tilt
     writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
     
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
     
 def changeHeadTilt(newTilt, ser):
-    global tilt = newTilt
+    global tilt; tilt = newTilt
     global r, g, b
     writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
     
 def changeEyeBrows(browLeft, browRight, ser):
-    global eyebrowLeft = browLeft
-    global eyebrowRight = browRight
+    global eyebrowLeft; eyebrowLeft = browLeft
+    global eyebrowRight; eyebrowRight = browRight
     global gripper
     writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, chr(0), ser)
 
 def changeGripper(newGripper, ser):
     global eyebrowLeft, eyebrowRight
-    global gripper = newGripper
+    global gripper; gripper = newGripper
     writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, chr(0), ser)
 
 def changeMotor(motor, ser):
@@ -133,27 +132,26 @@ def main():
     changeColor(int(0),int(0),int(0),ser);
    while True:
         pygame.event.pump()
-#         red = 127 + 127*stick.get_axis(0)
-#         green = 127 + 127*stick.get_axis(1)
-#         if(red > 255):
-#             red = 255
-#         if(green > 255):
-#             green = 255
-#         print (green)
-#         print (red)
-#         changeColor(int(red), int(green),int(green),ser)
-         #ser.write(chr(0x4f))
-         #sleep(0.1)
-         # Event listeners.
-         changeColor(0,0,0,ser)
-         if (stick.get_button(2)):
+        red = 127 + 127*stick.get_axis(0)
+        green = 127 + 127*stick.get_axis(1)
+        if(red > 255):
+            red = 255
+            if(green > 255):
+                green = 255
+                print (green)
+                print (red)
+        #ser.write(chr(0x4f))
+        #sleep(0.1)
+     
+     
+        if (stick.get_button(2)):
             changeColor(0, 0, 0, ser)
             print "Button 3"
-         if (stick.get_button(3)):
+        if (stick.get_button(3)):
             print "Button 4"
-         if (stick.get_button(4)):
+        if (stick.get_button(4)):
             print "Button 5"
-        
+
 main()
 
 
