@@ -51,10 +51,29 @@ int main(void)
     UCSR2C = (3<<UCSZ20);
     /* Setup Motor Shield pins */
     //Phase and Frequency Correct PWM
-    TCCR3A = (0<<COM3C1)|(1<<COM3C0)|(0<<WGM31)|(1<<WGM30);
-    TCCR3B = (0<<CS32)|(1<<CS31)|(0<<CS30)|(0<<WGM33)|(1<<WGM32);
-    //TCCR3C = (1<<FOC3C);
-    OCR3CL = 0x10;
+    //TCCR3A = (1<<COM3C1)|(1<<COM3C0)|(1<<WGM31)|(1<<WGM30);
+    //TCCR3B = (0<<CS32)|(1<<CS31)|(0<<CS30)|(1<<WGM33)|(1<<WGM32);
+    //ICR3 = 0x100;
+    //OCR3C = 0x80;
+    /*
+    TCCR1A = (1<<COM1A1)|(1<<COM1A0)|(0<<WGM11)|(1<<WGM10);
+    TCCR1B = (1<<CS12)|(1<<CS11)|(0<<CS10)|(1<<WGM13)|(0<<WGM12);
+    OCR1A = 0x80;
+    */
+    //Working below
+    /*
+    DDRB |= (1<<PINB5);
+    ICR1 = 2000;
+    OCR1A = 1500;
+    TCCR1A = (1<<COM1A1);
+    TCCR1B = (1<<WGM13)|(1<<CS11);
+    */
+    //PWM on D3 or PE5 or OC3C
+    DDRE |= (1<<PINE5);
+    ICR3 = 1000;//1ms period
+    OCR3C = 0x00;
+    TCCR3A = (1<<COM3C1);
+    TCCR3B = (1<<WGM33)|(1<<CS31);
     DDRB |= (1<<panDir)|(1<<panBrake);
     while(1)
     {
@@ -92,8 +111,7 @@ int main(void)
                     PORTB &= ~(1<<panDir);
                     speed = (int8_t)data1;
                 }
-                (void)speed;
-                OCR3CL = 0x10;
+                OCR3CL = speed;
             }
         }
         PORTB &= ~(1<<DIAG);
