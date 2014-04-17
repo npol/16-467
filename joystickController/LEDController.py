@@ -1,5 +1,5 @@
 WRITE_INTERVAL = 0.005
-#globals
+#globals 
 r = 0
 g = 0
 b = 0
@@ -21,9 +21,9 @@ from random import random
 import math
 joystick = pygame.joystick
 
-LED              : 0x80 0x10 R G B 0x08-0x4d            
-Eyebrows         : 0x80 0x20 [eyebrow1(right) eyebrow2(left) 0x06-0x10] gripper 0x10-0x50, 0                         (0x06 - 0x20)
-Motor (Side-Side): 0x80 0x30 non-zero signed8bit 0 0    (0x06 - 0x20)
+#LED              : 0x80 0x10 R G B 0x08-0x4d            
+#Eyebrows         : 0x80 0x20 [eyebrow1(right) eyebrow2(left) 0x06-0x10] gripper 0x10-0x50, 0                         (0x06 - 0x20)
+#Motor (Side-Side): 0x80 0x30 non-zero signed8bit 0 0    (0x06 - 0x20)
 
 def writeToSer(a, b, c, d, e, f, ser):
     ser.write(a); sleep(WRITE_INTERVAL)
@@ -34,7 +34,8 @@ def writeToSer(a, b, c, d, e, f, ser):
     ser.write(f); sleep(WRITE_INTERVAL)
 
 def changeEyeColor(newR, newG, newB, ser):
-    global r = newR 
+    global r 
+    r = newR 
     global g = newG
     global b = newB
     global tilt
