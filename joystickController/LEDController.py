@@ -1,4 +1,18 @@
 WRITE_INTERVAL = 0.005
+#globals
+r = 0
+g = 0
+b = 0
+eyebrowLeft = 0
+eyebrowRight = 0
+gripper = 0
+tilt = 0
+motor = 0
+ARDUINO = chr(0x80)
+LED_SERVO     = chr(0x10)
+EYEBROW_SERVO = chr(0x20)
+MOTOR_SERVO   = chr(0x30)
+
 
 import serial
 import pygame
@@ -7,25 +21,47 @@ from random import random
 import math
 joystick = pygame.joystick
 
+LED              : 0x80 0x10 R G B 0x08-0x4d            
+Eyebrows         : 0x80 0x20 [eyebrow1(right) eyebrow2(left) 0x06-0x10] gripper 0x10-0x50, 0                         (0x06 - 0x20)
+Motor (Side-Side): 0x80 0x30 non-zero signed8bit 0 0    (0x06 - 0x20)
 
-def turnOnLED():
-    pass
+def writeToSer(a, b, c, d, e, f, ser):
+    ser.write(a); sleep(WRITE_INTERVAL)
+    ser.write(b); sleep(WRITE_INTERVAL)
+    ser.write(c); sleep(WRITE_INTERVAL)
+    ser.write(d); sleep(WRITE_INTERVAL)
+    ser.write(e); sleep(WRITE_INTERVAL)
+    ser.write(f); sleep(WRITE_INTERVAL)
 
-def changeColor(r, g, b, ser):
-    ser.write(chr(0x80))
-    sleep(WRITE_INTERVAL)
-    ser.write(chr(0x10))
-    sleep(WRITE_INTERVAL)
-    ser.write(chr(r))
-    sleep(WRITE_INTERVAL)
-    ser.write(chr(g))
-    sleep(WRITE_INTERVAL)
-    ser.write(chr(b))
-    sleep(WRITE_INTERVAL)
-    ser.write(chr(r))
-    sleep(WRITE_INTERVAL)
+def changeEyeColor(newR, newG, newB, ser):
+    global r = newR 
+    global g = newG
+    global b = newB
+    global tilt
+    writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
+    
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
     
+def changeHeadTilt(newTilt, ser):
+    global tilt = newTilt
+    global r, g, b
+    writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
+    
+def changeEyeBrows(browLeft, browRight, ser):
+    global eyebrowLeft = browLeft
+    global eyebrowRight = browRight
+    global gripper
+    writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, chr(0), ser)
+
+def changeGripper(newGripper, ser):
+    global eyebrowLeft, eyebrowRight
+    global gripper = newGripper
+    writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, chr(0), ser)
+
+def changeMotor(motor, ser):
+    writeToSer(ARDUINO, MOTOR_SERVO, chr(1), motor, chr(0), chr(0), ser)
+
+
 def changeServo(val, ser):
     ser.write(chr(0x80))
     sleep(WRITE_INTERVAL)
@@ -94,8 +130,8 @@ def main():
     print "Serial connected"
     print "[Serial] Connected to Robot via %s" % ser.name
     changeColor(int(0),int(0),int(0),ser);
-#    while True:
-#         pygame.event.pump()
+   while True:
+        pygame.event.pump()
 #         red = 127 + 127*stick.get_axis(0)
 #         green = 127 + 127*stick.get_axis(1)
 #         if(red > 255):
@@ -107,15 +143,15 @@ def main():
 #         changeColor(int(red), int(green),int(green),ser)
          #ser.write(chr(0x4f))
          #sleep(0.1)
-         #Event listeners.
-         #changeColor(0,0,0,ser)
-         #if (stick.get_button(2)):
-         #    changeColor(0, 0, 0, ser)
-         #    print "Button 3"
-         #if (stick.get_button(3)):
-         #    print "Button 4"
-         #if (stick.get_button(4)):
-         #    print "Button 5"
+         # Event listeners.
+         changeColor(0,0,0,ser)
+         if (stick.get_button(2)):
+            changeColor(0, 0, 0, ser)
+            print "Button 3"
+         if (stick.get_button(3)):
+            print "Button 4"
+         if (stick.get_button(4)):
+            print "Button 5"
         
 main()
 
