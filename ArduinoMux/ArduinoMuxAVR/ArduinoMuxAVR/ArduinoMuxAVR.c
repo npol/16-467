@@ -7,6 +7,10 @@
 
 #include <avr/io.h>
 #define DIAG PINB7
+//Motor Shield Channel A
+#define panDir PINB6
+#define panPWM PINE5//OC3C
+#define panBrake PINH6
 
 #define LED_ADDR 0x10
 #define SERVO_ADDR 0x20
@@ -46,6 +50,12 @@ int main(void)
     UCSR2B = (1<<RXEN2)|(1<<TXEN2);
     UCSR2C = (3<<UCSZ20);
     /* Setup Motor Shield pins */
+    //Phase and Frequency Correct PWM
+    TCCR3A = (0<<COM3C1)|(1<<COM3C0)|(0<<WGM31)|(1<<WGM30);
+    TCCR3B = (0<<CS32)|(1<<CS31)|(0<<CS30)|(0<<WGM33)|(1<<WGM32);
+    //TCCR3C = (1<<FOC3C);
+    OCR3CL = 0x10;
+    DDRB |= (1<<panDir)|(1<<panBrake);
     while(1)
     {
         /* Wait for computer data */
@@ -73,7 +83,18 @@ int main(void)
             tx_servo(data2);
             tx_servo(data3);            
         } else if(addr == PAN_ADDR) {
-            //TODO: Add Shield code
+            if(data0){//Enable byte
+                int8_t speed;
+                if((int8_t)data1 < 0){
+                    PORTB |= (1<<panDir);
+                    speed = -(int8_t)data1;
+                } else {
+                    PORTB &= ~(1<<panDir);
+                    speed = (int8_t)data1;
+                }
+                (void)speed;
+                OCR3CL = 0x10;
+            }
         }
         PORTB &= ~(1<<DIAG);
     }

@@ -64,9 +64,9 @@ int main(void)
         //Servo 2
         OCR0A = 0xff - Servo2;
         //Servo 3
-        OCR1B = (uint16_t)(Servo4 >> 1);
+        OCR1B = (uint16_t)(Servo4) << 2;
         //Servo 4
-        OCR1A = (uint16_t)(Servo3 >> 1);
+        OCR1A = (uint16_t)(Servo3) << 2;
         
         //OCR0A = 0x80;
         //OCR0B = 0xc0;//reversed

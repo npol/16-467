@@ -64,9 +64,9 @@ int main(void)
         //Red LED
         OCR0B = 0xff - LedR;
         //Blue LED
-        OCR1A = (uint16_t)(LedB << 4);
+        OCR1A = (uint16_t)(LedB) << 4;
         //Servo
-        OCR1B = (uint16_t)(Servo >> 1);
+        OCR1B = (uint16_t)(Servo) << 2;
         
         //OCR0A = 0x80;
         //OCR0B = 0xc0;//reversed

@@ -25,6 +25,56 @@ def changeColor(r, g, b, ser):
     ser.write(chr(r))
     sleep(WRITE_INTERVAL)
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
+    
+def changeServo(val, ser):
+    ser.write(chr(0x80))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0x10))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(val))
+    sleep(WRITE_INTERVAL)
+    
+def changeServo2(val, ser, num):
+    cmd0 = 0
+    cmd1 = 0
+    cmd2 = 0
+    cmd3 = 0
+    if(num == 0): cmd0 = val
+    if(num == 1): cmd1 = val
+    if(num == 2): cmd2 = val
+    if(num == 3): cmd3 = val
+    ser.write(chr(0x80))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0x20))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(cmd0))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(cmd1))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(cmd2))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(cmd3))
+    sleep(WRITE_INTERVAL)
+    
+def changeMotor(en, val, ser):
+    ser.write(chr(0x80))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0x30))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(en))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(val))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0))
+    sleep(WRITE_INTERVAL)
+    ser.write(chr(0))
+    sleep(WRITE_INTERVAL)
 
 def main():
     global ser
@@ -44,17 +94,17 @@ def main():
     print "Serial connected"
     print "[Serial] Connected to Robot via %s" % ser.name
     changeColor(int(0),int(0),int(0),ser);
-    while True:
-         pygame.event.pump()
-         red = 127 + 127*stick.get_axis(0)
-         green = 127 + 127*stick.get_axis(1)
-         if(red > 255):
-             red = 255
-         if(green > 255):
-             green = 255
-         print (green)
-         print (red)
-         changeColor(int(red), int(green),int(green),ser)
+#    while True:
+#         pygame.event.pump()
+#         red = 127 + 127*stick.get_axis(0)
+#         green = 127 + 127*stick.get_axis(1)
+#         if(red > 255):
+#             red = 255
+#         if(green > 255):
+#             green = 255
+#         print (green)
+#         print (red)
+#         changeColor(int(red), int(green),int(green),ser)
          #ser.write(chr(0x4f))
          #sleep(0.1)
          #Event listeners.
