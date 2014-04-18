@@ -57,7 +57,7 @@ def changeEyebrows(browLeft, browRight, ser):
 def changeGripper(newGripper, ser):
     global eyebrowLeft, eyebrowRight
     global gripper; gripper = newGripper
-    writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, 0, ser)
+    writeToSer(ARDUINO, EYEBROW_SERVO, chr(eyebrowLeft), chr(eyebrowRight), gripper, chr(0), ser)
 
 #dir: 0 left rotation, 1 right rotation. speed between 0-70. 
 def changeMotor(dir, speed, ser):
@@ -118,6 +118,7 @@ def main():
     print "Serial connected"
     print "[Serial] Connected to Robot via %s" % ser.name
     changeEyeColor(0,0,0,ser)
+    gripperState = 0;
     while True:
         pygame.event.pump()
         # red = 127 + 127*stick.get_axis(0)
@@ -147,8 +148,14 @@ def main():
                 dir = turnVal >= 0
                 changeMotor(dir, speed, ser)
         # Gripper - button 1
-        if (stick.get_button(0)):
-            pass
+        if ((gripperState == 0) and stick.get_button(0)):
+            gripperState= 1;
+            changeGripper(chr(0x10),ser)
+            print "grip"
+        elif(gripperState and (stick.get_button(0) == 0)):
+            gripperState = 0;
+            changeGripper(chr(0x45),ser)
+            print "ungrip"
         
         # Eyebrows and eye color
         # value: float from 0 to 2
