@@ -52,7 +52,7 @@ def changeHeadTilt(newTilt, ser):
 def changeEyeBrows(browLeft, browRight, ser):
     global gripper
     print "left: %d | right: %d\n", browLeft, browRight
-    writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, 0, ser)
+    # writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, 0, ser)
 
 def changeGripper(newGripper, ser):
     global eyebrowLeft, eyebrowRight
