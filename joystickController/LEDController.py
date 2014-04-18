@@ -51,8 +51,8 @@ def changeHeadTilt(newTilt, ser):
     
 def changeEyebrows(browLeft, browRight, ser):
     global gripper
-    print "left: %d | right: %d\n" % (browLeft, browRight)
-    writeToSer(ARDUINO, EYEBROW_SERVO, chr(eyebrowLeft), chr(eyebrowRight), chr(gripper), chr(0), ser)
+    print "left: %x | right: %x\n" % (browLeft, browRight)
+    writeToSer(ARDUINO, EYEBROW_SERVO, chr(browLeft), chr(browRight), chr(gripper), chr(0), ser)
 
 def changeGripper(newGripper, ser):
     global eyebrowLeft, eyebrowRight
@@ -159,8 +159,8 @@ def main():
         if EYEBROW_RANGE*(abs(newEyebrow - eyebrow)) > EYEBROW_THRESHOLD:
             # Change eyebrows
             eyebrow = newEyebrow            
-            eyebrowLeft  =  int(EYEBROW_RANGE*eyebrow + 12)
-            eyebrowRight = int(-EYEBROW_RANGE*eyebrow + 18)
+            eyebrowLeft  =  int(-2*EYEBROW_RANGE*eyebrow + 25)
+            eyebrowRight = int(2*EYEBROW_RANGE*eyebrow + 17)
             changeEyebrows(eyebrowLeft, eyebrowRight, ser)
             
             # Change eye color

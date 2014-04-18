@@ -48,6 +48,10 @@ int main(void)
     
     TCCR0A = (1<<WGM01)|(1<<WGM00)|(1<<COM0B1)|(1<<COM0B0)|(1<<COM0A0)|(1<<COM0A1);
     TCCR0B = (1<<CS00)|(1<<CS01)|(1<<WGM01);
+    OCR0A = 0xff - 0x06;
+    OCR0B = 0xff - 0x06;
+    OCR1B = (uint16_t)(0x30) << 2;
+    OCR1A = (uint16_t)(0x30) << 2;
     
     while(1)
     {
