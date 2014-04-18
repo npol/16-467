@@ -118,29 +118,31 @@ def main():
     changeEyeColor(0,0,0,ser)
     while True:
         pygame.event.pump()
+        
         red = 127 + 127*stick.get_axis(0)
-        green = 127 + 127*stick.get_axis(1)
+#        green = 127 + 127*stick.get_axis(1)
         if(red > 255):
             red = 255
-            if(green > 255):
-                green = 255
-                print (green)
-                print (red)
+#            if(green > 255):
+#                green = 255
+#                print (green)
+        print (red)
+        changeMotor(int(red), ser)
         #ser.write(chr(0x4f))
         #sleep(0.1)
      
      
-        if (stick.get_button(2)):
-            changeEyeColor(int(0), 0, 0, ser)
-            print "Button 3"
-        if (stick.get_button(3)):
-            print "Button 4"
-        if (stick.get_button(4)):
-            print "Button 5"
-        if (stick.get_axis(0)):
-            print int(64*stick.get_axis(0) +2)#-16 to 16 L-R joystick
-            changeMotor(int(50*stick.get_axis(0)+20), ser)
-            sleep(.02)
+#        if (stick.get_button(2)):
+#            changeEyeColor(int(0), 0, 0, ser)
+#            print "Button 3"
+#        if (stick.get_button(3)):
+#            print "Button 4"
+#        if (stick.get_button(4)):
+#            print "Button 5"
+#        if (stick.get_axis(0)):
+#            print int(64*stick.get_axis(0) +2)#-16 to 16 L-R joystick
+#            changeMotor(int(50*stick.get_axis(0)+20), ser)
+#            sleep(.02)
         
         
 

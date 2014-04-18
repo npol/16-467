@@ -8,9 +8,9 @@
 #include <avr/io.h>
 #define DIAG PINB7
 //Motor Shield Channel A
-#define panDir PINB6
+#define panC PING5
+#define panD PINE3
 #define panPWM PINE5//OC3C
-#define panBrake PINH6
 
 #define LED_ADDR 0x10
 #define SERVO_ADDR 0x20
@@ -69,12 +69,14 @@ int main(void)
     TCCR1B = (1<<WGM13)|(1<<CS11);
     */
     //PWM on D3 or PE5 or OC3C
-    DDRE |= (1<<PINE5);
+    DDRE |= (1<<panD)|(1<<panPWM);
+    DDRG |= (1<<panC);
     ICR3 = 1000;//1ms period
     OCR3C = 0x00;
     TCCR3A = (1<<COM3C1);
     TCCR3B = (1<<WGM33)|(1<<CS31);
-    DDRB |= (1<<panDir)|(1<<panBrake);
+    DDRE |= (1<<panD);
+    DDRG |= (1<<panC);
     while(1)
     {
         /* Wait for computer data */
@@ -105,13 +107,18 @@ int main(void)
             if(data0){//Enable byte
                 int8_t speed;
                 if((int8_t)data1 < 0){
-                    PORTB |= (1<<panDir);
+                    PORTG |= (1<<panC);
+                    PORTE &= ~(1<<panD);
                     speed = -(int8_t)data1;
                 } else {
-                    PORTB &= ~(1<<panDir);
+                    PORTG &= ~(1<<panC);
+                    PORTE |= (1<<panD);
                     speed = (int8_t)data1;
                 }
                 OCR3CL = speed;
+            } else {
+                PORTG &= ~(1<<panC);
+                PORTE &= ~(1<<panD);
             }
         }
         PORTB &= ~(1<<DIAG);
