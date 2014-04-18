@@ -106,14 +106,14 @@ int main(void)
         } else if(addr == PAN_ADDR) {
             if(data0){//Enable byte
                 int8_t speed;
-                if(data1){
+                if((int8_t)data1 < 0){
                     PORTG |= (1<<panC);
                     PORTE &= ~(1<<panD);
-                    speed = data2;
+                    speed = -(int8_t)data1;
                 } else {
                     PORTG &= ~(1<<panC);
                     PORTE |= (1<<panD);
-                    speed = data2;
+                    speed = (int8_t)data1;
                 }
                 OCR3CL = speed;
             } else {

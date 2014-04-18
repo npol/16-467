@@ -38,7 +38,7 @@ def changeEyeColor(newR, newG, newB, ser):
     global g; g= newG
     global b; b = newB
     global tilt
-    writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
+    writeToSer(ARDUINO, LED_SERVO, r, g, b, chr(tilt), ser)
     
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
     
@@ -138,16 +138,11 @@ def main():
             print "Button 4"
         if (stick.get_button(4)):
             print "Button 5"
-        #x = (stick.get_axis(0)):
-        sleep(0.02)
-        #print stick.get_axis(1)
-        turnVal = stick.get_axis(0)
-        speed = int(abs(127*turnVal))#-16 to 16 L-R joystick
-        print speed
-        #print speed
-        dir = turnVal >= 0
-        changeMotor(dir, speed, ser)
-        sleep(.02)
+        if (stick.get_axis(0)):
+            speed = int(50*stick.get_axis(0) +20)#-16 to 16 L-R joystick
+            dir = speed >= 0
+            changeMotor(dir, speed, ser)
+            sleep(.02)
         
         
 
