@@ -28,9 +28,9 @@ joystick = pygame.joystick
 def writeToSer(a, b, c, d, e, f, ser):
     ser.write(a); sleep(WRITE_INTERVAL)
     ser.write(b); sleep(WRITE_INTERVAL)
-    ser.write(chr(c)); sleep(WRITE_INTERVAL)
-    ser.write(chr(d)); sleep(WRITE_INTERVAL)
-    ser.write(chr(e)); sleep(WRITE_INTERVAL)
+    ser.write(c); sleep(WRITE_INTERVAL)
+    ser.write(d); sleep(WRITE_INTERVAL)
+    ser.write(e); sleep(WRITE_INTERVAL)
     ser.write(f); sleep(WRITE_INTERVAL)
 
 def changeEyeColor(newR, newG, newB, ser):
@@ -58,8 +58,9 @@ def changeGripper(newGripper, ser):
     global gripper; gripper = newGripper
     writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, 0, ser)
 
-def changeMotor(motor, ser):
-    writeToSer(ARDUINO, MOTOR_SERVO, 1, motor, 0, chr(0), ser)
+#dir: 0 left rotation, 1 right rotation. speed between 0-70. 
+def changeMotor(dir, speed, ser):
+    writeToSer(ARDUINO, MOTOR_SERVO, chr(1), chr(dir), chr(speed), chr(0), ser)
 
 
 def changeServo(val, ser):
@@ -138,8 +139,9 @@ def main():
         if (stick.get_button(4)):
             print "Button 5"
         if (stick.get_axis(0)):
-            print int(64*stick.get_axis(0) +2)#-16 to 16 L-R joystick
-            changeMotor(int(50*stick.get_axis(0)+20), ser)
+            speed = int(50*stick.get_axis(0) +20)#-16 to 16 L-R joystick
+            dir = speed >= 0
+            changeMotor(dir, speed, ser)
             sleep(.02)
         
         
