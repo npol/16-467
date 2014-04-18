@@ -5,9 +5,13 @@ g = chr(0)
 b = chr(0)
 eyebrowLeft = 0
 eyebrowRight = 0
+eyebrow = 0
 gripper = 0
 tilt = 0
 motor = 0
+MOTOR_THRESHOLD = 20
+EYEBROW_THRESHOLD = 1
+EYEBROW_RANGE = 6/2
 ARDUINO = chr(0x80)
 LED_SERVO     = chr(0x10)
 EYEBROW_SERVO = chr(0x20)
@@ -33,12 +37,10 @@ def writeToSer(a, b, c, d, e, f, ser):
     ser.write(e); sleep(WRITE_INTERVAL)
     ser.write(f); sleep(WRITE_INTERVAL)
 
-def changeEyeColor(newR, newG, newB, ser):
-    global r; r = newR 
-    global g; g= newG
-    global b; b = newB
+def changeEyeColor(r, g, b, ser):
     global tilt
-    writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
+    print "r: %d, g: %d, b: %d\n", r, g, b
+    # writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
     
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
     
@@ -48,9 +50,8 @@ def changeHeadTilt(newTilt, ser):
     writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
     
 def changeEyeBrows(browLeft, browRight, ser):
-    global eyebrowLeft; eyebrowLeft = browLeft
-    global eyebrowRight; eyebrowRight = browRight
     global gripper
+    print "left: %d | right: %d\n", browLeft, browRight
     writeToSer(ARDUINO, EYEBROW_SERVO, eyebrowLeft, eyebrowRight, gripper, 0, ser)
 
 def changeGripper(newGripper, ser):
@@ -119,16 +120,14 @@ def main():
     changeEyeColor(0,0,0,ser)
     while True:
         pygame.event.pump()
-        red = 127 + 127*stick.get_axis(0)
-        green = 127 + 127*stick.get_axis(1)
-        if(red > 255):
-            red = 255
-            if(green > 255):
-                green = 255
-                print (green)
-                print (red)
-        #ser.write(chr(0x4f))
-        #sleep(0.1)
+        # red = 127 + 127*stick.get_axis(0)
+        # green = 127 + 127*stick.get_axis(1)
+        # if(red > 255):
+        #     red = 255
+        #     if(green > 255):
+        #         green = 255
+        #         print (green)
+        #         print (red)
      
      
         if (stick.get_button(2)):
@@ -138,18 +137,42 @@ def main():
             print "Button 4"
         if (stick.get_button(4)):
             print "Button 5"
-        #x = (stick.get_axis(0)):
-        sleep(0.02)
-        #print stick.get_axis(1)
-        turnVal = stick.get_axis(0)
-        speed = int(abs(127*turnVal))#-16 to 16 L-R joystick
-        print speed
-        #print speed
-        dir = turnVal >= 0
-        changeMotor(dir, speed, ser)
+        # Motor - Button 2
+        if (stick.get_button(1)):
+            turnVal = stick.get_axis(0)
+            speed = int(abs(127*turnVal))#-16 to 16 L-R joystick
+            print speed
+            # Purposeful movement
+            if speed > MOTOR_THRESHOLD:
+                dir = turnVal >= 0
+                changeMotor(dir, speed, ser)
+        # Gripper - button 1
+        if (stick.get_button(0)):
+            pass
+        
+        # Eyebrows and eye color
+        # value: float from 0 to 2
+        newEyebrow = int(sick.get_axis(2)) + 1
+        global eyebrow
+        # Purposeful movement
+        if EYEBROW_RANGE*(abs(newEyebrow - eyebrow)) > EYEBROW_THRESHOLD:
+            # Change eyebrows
+            eyebrow = newEyebrow            
+            eyebrowLeft  =  EYEBROW_RANGE*eyebrow + 12
+            eyebrowRight = -EYEBROW_RANGE*eyebrow + 18
+            change_eyebrows(eyebrowLeft, eyebrowRight, ser)
+            
+            # Change eye color
+            global r; g; b;
+            r = int((255/(EYEBROW_RANGE*2))*eyebrow)
+            g = 0
+            b = 255 - int((255/(EYEBROW_RANGE*2))*eyebrow)
+            changeEyeColor(r, g, b, ser)
+        
         sleep(.02)
         
-        
+
+
 
 main()
 
