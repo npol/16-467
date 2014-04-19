@@ -2,9 +2,9 @@ WRITE_INTERVAL = 0.005
 #globals 
 r = 0
 g = 0
-b = 0
-eyebrowLeft = 0
-eyebrowRight = 0
+b = 255
+eyebrowLeft = 25
+eyebrowRight = 17
 eyebrow = 0
 gripper = 0
 tilt = 0
@@ -40,29 +40,30 @@ def writeToSer(a, b, c, d, e, f, ser):
 def changeEyeColor(r, g, b, ser):
     global tilt
     writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
-    print "r: %d, g: %d, b: %d\n" % (r, g, b)
     writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
     #callToLED('\x80', '\x10', chr(r), chr(g), chr(b), 1)
     
 def changeHeadTilt(newTilt, ser):
-    global tilt; tilt = newTilt
+    global tilt; tilt = int(newTilt)
     global r, g, b
-    writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), tilt, ser)
+    writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), chr(tilt), ser)
     
 def changeEyebrows(browLeft, browRight, ser):
     global gripper
-    print "left: %x | right: %x\n" % (browLeft, browRight)
     writeToSer(ARDUINO, EYEBROW_SERVO, chr(browLeft), chr(browRight), chr(gripper), chr(0), ser)
 
 def changeGripper(newGripper, ser):
-    global eyebrowLeft, eyebrowRight
-    global gripper; gripper = newGripper
-    writeToSer(ARDUINO, EYEBROW_SERVO, chr(eyebrowLeft), chr(eyebrowRight), gripper, chr(0), ser)
+    global eyebrowLeft
+    global eyebrowRight
+    global gripper; gripper = int(newGripper)
+    writeToSer(ARDUINO, EYEBROW_SERVO, chr(eyebrowLeft), chr(eyebrowRight), chr(gripper), chr(0), ser)
 
 #dir: 0 left rotation, 1 right rotation. speed between 0-70. 
 def changeMotor(dir, speed, ser):
     writeToSer(ARDUINO, MOTOR_SERVO, chr(1), chr(dir), chr(speed), chr(0), ser)
 
+def killMotor(ser):
+    writeToSer(ARDUINO, MOTOR_SERVO, chr(0), chr(0), chr(0), chr(0), ser)
 
 def changeServo(val, ser):
     ser.write(chr(0x80))
@@ -114,25 +115,18 @@ def main():
     print "[Joystick] %d buttons" % stick.get_numbuttons()
     print "[Joystick] %d hats" % stick.get_numhats()
     
-    ser = serial.Serial("COM16", 9600, timeout=0)
+    ser = serial.Serial("COM19", 9600, timeout=0)
     print "Serial connected"
     print "[Serial] Connected to Robot via %s" % ser.name
-    changeEyeColor(0,0,0,ser)
-    gripperState = 0;
+    gripperState = 0
+    # Initialize calm eye color and eyebrow posture
+    sleep(.2)
+    changeEyebrows(25, 17, ser)
+    changeEyeColor(int(0), int(0), int(255), ser)
     while True:
         pygame.event.pump()
-        # red = 127 + 127*stick.get_axis(0)
-        # green = 127 + 127*stick.get_axis(1)
-        # if(red > 255):
-        #     red = 255
-        #     if(green > 255):
-        #         green = 255
-        #         print (green)
-        #         print (red)
-     
      
         if (stick.get_button(2)):
-            changeEyeColor(int(0), 0, 0, ser)
             print "Button 3"
         if (stick.get_button(3)):
             print "Button 4"
@@ -141,26 +135,25 @@ def main():
         # Motor - Button 2
         if (stick.get_button(1)):
             panVal = stick.get_axis(0)
-            tiltVal = stick.get_axis(1)
-            speed = int(abs(127*panVal))#-16 to 16 L-R joystick
-            #print speed
+            tiltVal = -stick.get_axis(1)
+            speed = int(abs(90*panVal))#-16 to 16 L-R joystick
             # Purposeful movement
             if speed > MOTOR_THRESHOLD:
                 dir = panVal >= 0
                 changeMotor(dir, speed, ser)
             tiltVal = 69*((tiltVal + 1)/2)
-            tiltVal = tiltVal + 0x08
-            print tiltVal
-            changeHeadTilt(chr(int(tiltVal)), ser)
+            tiltVal = int(tiltVal + 0x08)
+            changeHeadTilt(tiltVal, ser)
         # Gripper - button 1
+        else:
+            killMotor(ser)
+            
         if ((gripperState == 0) and stick.get_button(0)):
             gripperState= 1;
-            changeGripper(chr(0x10),ser)
-            print "grip"
+            changeGripper(int(0x50),ser)
         elif(gripperState and (stick.get_button(0) == 0)):
             gripperState = 0;
-            changeGripper(chr(0x45),ser)
-            print "ungrip"
+            changeGripper(int(0x30),ser)
         
         # Eyebrows and eye color
         # value: float from 0 to 2
@@ -173,16 +166,16 @@ def main():
             eyebrow = newEyebrow            
             eyebrowLeft  =  int(-2*EYEBROW_RANGE*eyebrow + 25)
             eyebrowRight = int(2*EYEBROW_RANGE*eyebrow + 17)
-            changeEyebrows(eyebrowLeft, eyebrowRight, ser)
             
+            changeEyebrows(eyebrowLeft, eyebrowRight, ser)
             # Change eye color
             global r
             global g
             global b
             r = int((255/(EYEBROW_RANGE*2))*eyebrow*EYEBROW_RANGE)
-            g = 0
+            g = int(0)
             b = 255 - int((255/(EYEBROW_RANGE*2))*eyebrow*EYEBROW_RANGE)
-            changeEyeColor(r, g, b, ser)
+            changeEyeColor(int(r), int(g), int(b), ser)
         
         sleep(.02)
         
