@@ -47,7 +47,7 @@ def changeEyeColor(r, g, b, ser):
 def changeHeadTilt(newTilt, ser):
     global tilt; tilt = newTilt
     global r, g, b
-    writeToSer(ARDUINO, LED_SERVO, r, g, b, tilt, ser)
+    writeToSer(ARDUINO, LED_SERVO, chr(r), chr(g), chr(b), tilt, ser)
     
 def changeEyebrows(browLeft, browRight, ser):
     global gripper
@@ -140,13 +140,18 @@ def main():
             print "Button 5"
         # Motor - Button 2
         if (stick.get_button(1)):
-            turnVal = stick.get_axis(0)
-            speed = int(abs(127*turnVal))#-16 to 16 L-R joystick
-            print speed
+            panVal = stick.get_axis(0)
+            tiltVal = stick.get_axis(1)
+            speed = int(abs(127*panVal))#-16 to 16 L-R joystick
+            #print speed
             # Purposeful movement
             if speed > MOTOR_THRESHOLD:
-                dir = turnVal >= 0
+                dir = panVal >= 0
                 changeMotor(dir, speed, ser)
+            tiltVal = 69*((tiltVal + 1)/2)
+            tiltVal = tiltVal + 0x08
+            print tiltVal
+            changeHeadTilt(chr(int(tiltVal)), ser)
         # Gripper - button 1
         if ((gripperState == 0) and stick.get_button(0)):
             gripperState= 1;
