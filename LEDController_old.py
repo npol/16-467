@@ -10,8 +10,8 @@ gripper = 0
 tilt = 0
 motor = 0
 MOTOR_THRESHOLD = 20
-EYEBROW_THRESHOLD = 1
-EYEBROW_RANGE = 6/2
+EYEBROW_THRESHOLD = 2
+EYEBROW_RANGE = 6
 ARDUINO = chr(0x80)
 LED_SERVO     = chr(0x10)
 EYEBROW_SERVO = chr(0x20)
@@ -171,17 +171,17 @@ def main():
         if EYEBROW_RANGE*(abs(newEyebrow - eyebrow)) > EYEBROW_THRESHOLD:
             # Change eyebrows
             eyebrow = newEyebrow            
-            eyebrowLeft  =  int(-2*EYEBROW_RANGE*eyebrow + 25)
-            eyebrowRight = int(2*EYEBROW_RANGE*eyebrow + 17)
+            eyebrowLeft  =  int(-EYEBROW_RANGE*eyebrow + 25)
+            eyebrowRight = int(EYEBROW_RANGE*eyebrow + 17)
             changeEyebrows(eyebrowLeft, eyebrowRight, ser)
             
             # Change eye color
             global r
             global g
             global b
-            r = int((255/(EYEBROW_RANGE*2))*eyebrow*EYEBROW_RANGE)
+            r = int((255/EYEBROW_RANGE)*eyebrow*EYEBROW_RANGE)
             g = 0
-            b = 255 - int((255/(EYEBROW_RANGE*2))*eyebrow*EYEBROW_RANGE)
+            b = 255 - int((255/EYEBROW_RANGE)*eyebrow*EYEBROW_RANGE)
             changeEyeColor(r, g, b, ser)
         
         sleep(.02)
